@@ -1,0 +1,151 @@
+---
+title: "Family_11"
+author: "Onna Nayyu Leyva Alcantara"
+date: "2023-10-05"
+output: html_document
+---
+
+![](Fig_1.png)
+
+
+## Family: 
+
+### Affected child with two unaffected, non-carrier siblings, as well as parents.
+
+## Symptoms: 
+
+### High bile acids.
+
+### Itching or plurite.
+
+### Hypercholesterolemia or high cholesterol.
+
+Data Set:
+
+```{r}
+setwd("~/Documentos/a5/Clau/tareaejerc/Tar_2")
+
+Datos = read.csv("FAM11.csv")
+# 22,668 variantes con 52 variables.
+```
+
+## There are 22,668 variants in the exome. 
+
+
+
+# Data Processing:
+
+## Coverage, Quality Control (QC) and Allelic Balance.
+
+Tr: Coverage >= 10.
+
+```{r}
+Cobertura = subset(Datos, TR >= 10)
+  # Vamos a dejar en "cobertura" lo mayor o igual a "10". 
+# 22,056
+```
+
+GQ: Genotype Quality Control >= 30.
+
+```{r}
+Quality = subset(Cobertura, GQ >= 30)
+# 21,885
+```   
+
+
+Ratio: Allelic Balance >= 20 percent. 
+
+```{r}
+Balancealelico = subset(Quality, RATIO >= 0.20)
+# 21,344
+```   
+
+  
+## Filter by annotation:
+
+We will remove by variant type:
+   In this case synonyms.
+
+```{r}
+Sinsinonimas = subset(Balancealelico, ANNOTATION != "synonymous SNV")
+# 10,793
+```
+
+
+Frequency: Eve_Alt_Freq <= 0.01 or to 1 percent. 
+
+```{r}
+Filtrado = subset(Sinsinonimas, EVE_ALT_FREQ <= 0.01) 
+# Frecuencia del alelo alternativo. 
+# 661
+```
+
+
+Renaming of the columns because "R" does not recognize the originals.
+
+```{r, echo=FALSE}
+colnames(Filtrado)
+colnames(Filtrado)[48] = "Probandzig"
+colnames(Filtrado)[49] = "Fatherzig"
+colnames(Filtrado)[50] = "Motherzig"
+colnames(Filtrado)[51] = "Unafectedzig"
+colnames(Filtrado)[52] = "Unafectedzig_1"
+```
+
+
+## Filter by Segregation:
+
+Filtering for a recessive disease:
+
+```{r}
+# Si los cinco integrantes de la familia son homocigotos:
+Nohomoall = subset(Filtrado, 
+                         !(Probandzig == "Proband:hom" & 
+                           Fatherzig == "Father:hom" &
+                           Motherzig == "Mother:hom" &
+                           Unafectedzig == "UaSib:hom" & 
+                           Unafectedzig_1 == "UaSib:hom"))
+# 586
+
+# Si los tres hermanos son homocigotos:
+Nohomohermas = subset(Nohomoall, 
+                         !(Probandzig == "Proband:hom" & 
+                           Unafectedzig == "UaSib:hom" & 
+                           Unafectedzig_1 == "UaSib:hom"))
+# 579
+
+# Si el probando y un hermano son homocigotos:
+Nohomoherma = subset(Nohomohermas, 
+                         !(Probandzig == "Proband:hom" & 
+                           Unafectedzig == "UaSib:hom"))
+# 565
+
+# Si el probando y el otro hermano son homocigotos:
+Nohomoherma2 = subset(Nohomoherma, 
+                         !(Probandzig == "Proband:hom" &
+                           Unafectedzig_1 == "UaSib:hom"))
+# 553
+
+# Si el probando y padre son homocigotos:
+Nohomopadre = subset(Nohomoherma2, 
+                         !(Probandzig == "Proband:hom" &
+                           Fatherzig == "Father:hom"))
+# 546
+
+# Si el probando y madre son homocigotos:
+Nohomomadre = subset(Nohomopadre, 
+                         !(Probandzig == "Proband:hom" &
+                           Motherzig == "Mother:hom"))
+# 543
+```   
+
+
+Only the proband is homozygous:
+
+```{r}
+homo = subset(Nohomomadre, Probandzig == "Proband:hom")
+# 11
+```   
+
+## So if we look for an autosomical recesive disease, we obtain 11 related variants, six nonframeshift insertions, two nonsynonymous SNV, two frameshift deletion and one splicing. Although I check everyone, the most striking ones were the last three, and looking for that variants I found that one of the nonsynonymous SNV in the tight junction protein 2 (TJP2) gene cause the symptoms that we were looking for. 
+
