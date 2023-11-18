@@ -2,7 +2,9 @@
 title: "Family_11"
 author: "Onna Nayyu Leyva Alcantara"
 date: "2023-10-05"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ![](Fig_1.png)
@@ -40,15 +42,15 @@ Datos = read.csv("FAM11.csv")
 Tr: Coverage >= 10.
 
 ```{r}
-Cobertura = subset(Datos, TR >= 10)
-  # Vamos a dejar en "cobertura" lo mayor o igual a "10". 
+Profundidad = subset(Datos, TR >= 10)
+  # Vamos a dejar en "profundidad" lo mayor o igual a "10". 
 # 22,056
 ```
 
 GQ: Genotype Quality Control >= 30.
 
 ```{r}
-Quality = subset(Cobertura, GQ >= 30)
+Quality = subset(Profundidad, GQ >= 30)
 # 21,885
 ```   
 
@@ -95,7 +97,11 @@ colnames(Filtrado)[52] = "Unafectedzig_1"
 
 ## Filter by Segregation:
 
+
+
 Filtering for a recessive disease:
+
+To clarify the next code is not the better way to codify it, but it's very visual and easy to understand. 
 
 ```{r}
 # Si los cinco integrantes de la familia son homocigotos:
@@ -147,5 +153,7 @@ homo = subset(Nohomomadre, Probandzig == "Proband:hom")
 # 11
 ```   
 
-## So if we look for an autosomical recesive disease, we obtain 11 related variants, six nonframeshift insertions, two nonsynonymous SNV, two frameshift deletion and one splicing. Although I check everyone, the most striking ones were the last three, and looking for that variants I found that one of the nonsynonymous SNV in the tight junction protein 2 (TJP2) gene cause the symptoms that we were looking for. 
+Before finishing, in this file I only show the homozygous filtering, although, other types of segregation where searched.
+
+### So if we look for an autosomical recesive disease, we obtain 11 related variants, six nonframeshift insertions, two nonsynonymous SNV, two frameshift deletion and one splicing. Although I check everyone, the most striking ones were the last three, and looking for that variants I found that one of the nonsynonymous SNV in the tight junction protein 2 (TJP2) gene cause the symptoms that we were looking for. 
 
